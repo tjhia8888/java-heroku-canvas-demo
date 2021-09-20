@@ -3,15 +3,16 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>Heroku Java Spring Boot Canvas Demo</title>
-		<link rel="stylesheet" type="text/css" href="/canvas-js-sdk/css/canvas.css" />
-		<link href="styles.css" rel="stylesheet">
-		<script type="text/javascript" src="/canvas-js-sdk/js/canvas-all.js"></script>
-		<script type="text/javascript" src="/json2.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../canvas-js-sdk/css/canvas.css" />
+		<link href="../../jsonTree/jsonTree.css" rel="stylesheet" />
+		<link href="../../styles.css" rel="stylesheet">
+		<script type="text/javascript" src="../../canvas-js-sdk/js/canvas-all.js"></script>
+		<script type="text/javascript" src="../../jsonTree/jsonTree.js"></script>
 	</head>
 	<body>
-		<img src="spring-boot-logo.png" />
+		<img src="../../spring-boot-logo.png" />
 		<h1>Heroku Java Spring Boot Canvas Demo</h1>
-		<h2>Canvas POST Signed Request</h2>
+		<h2>Canvas GET OAuth2 Web Server Flow</h2>
 		<p>Hello <span id="fullName"></span>. This is a web app written in Java using Spring Boot embedded in your Salesforce page (It could also be written in any other language).</p>
 		<p>It is aware of its environment. For example, here are a few things it knows:</p>
 		<table>
@@ -26,6 +27,10 @@
 			<tr>
 				<td>Id:</td>
 				<td id="recordId">Id</td>
+			</tr>
+			<tr>
+				<td>oauth token:</td>
+				<td id="oauth">oauth</td>
 			</tr>
 		</table>
 		<p>
@@ -46,13 +51,25 @@
 				// Not in Iframe
 				alert("This canvas app must be included within an iframe");
 			}
+			function callback(msg) {
+				if (msg.status !== 200) {
+					alert("Error: " + msg.status);
+					return;
+				}
+				Sfdc.canvas.byId("oauth").innerHTML = client.oauthToken.substring(1, 40) + "…";
+				jsonTree.create(msg, Sfdc.canvas.byId("wrapper"));
+				Sfdc.canvas.byId("fullName").innerHTML = msg.payload.user.fullName;
+				Sfdc.canvas.byId("username").innerHTML = msg.payload.user.userName;
+				Sfdc.canvas.byId("objectType").innerHTML = msg.payload.environment.record.attributes.type;
+				Sfdc.canvas.byId("recordId").innerHTML = msg.payload.environment.record.Id;
+				listenEvents();
+			}
 			function fireEvent() {
-				console.log(sr.client);
-				Sfdc.canvas.client.publish(sr.client, { name: "suggestion", payload: payloadObj });
+				Sfdc.canvas.client.publish(client, { name: "suggestion", payload: { recommendation: "Verify identity" } });
 				console.log("Canvas sent", payloadObj);
 			}
 			function listenEvents() {
-				Sfdc.canvas.client.subscribe(sr.client, {
+				Sfdc.canvas.client.subscribe(client, {
 					name: "recordchanged",
 					onData: function (e) {
 						console.log("Canvas recevied", e);
@@ -64,16 +81,17 @@
 				});
 			}
 
-			var payloadObj = { recommendation: "Verify identity" };
+			var client = {};
+			// Bootstrap the page once the DOM is ready.
 			Sfdc.canvas(function () {
-				var signedRequest = /*[[${signedRequest}]]*/ "";
-				sr = JSON.parse(signedRequest);
-				Sfdc.canvas.oauth.token(sr.oauthToken);
-				Sfdc.canvas.byId("fullName").innerHTML = sr.context.user.fullName;
-				Sfdc.canvas.byId("username").innerHTML = sr.context.user.userName;
-				Sfdc.canvas.byId("objectType").innerHTML = sr.context.environment.record.attributes.type;
-				Sfdc.canvas.byId("recordId").innerHTML = sr.context.environment.record.Id;
-				listenEvents();
+				var targetOrigin = /*[[${oauth.instance_url}]]*/ "";
+				client = {
+					oauthToken: /*[[${oauth.access_token}]]*/ "",
+					instanceId: window.name.replace('canvas-inner-',''), // hack ? "_:canvas_demo_oauth_wsf:j_id0:j_id2:canvasapp",
+					targetOrigin: targetOrigin.replaceAll('\\',''),
+				};
+				Sfdc.canvas.client.ctx(callback, client);
+				Sfdc.canvas.client.autogrow(client);
 			});
 		</script>
 	</body>

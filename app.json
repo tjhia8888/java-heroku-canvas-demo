@@ -1,0 +1,14 @@
+{
+    "name": "Spring Boot Heroku Demo",
+    "description": "This is a Java demo application for showing how to run a Spring Boot application on Heroku and expose it via Canvas in Salesforce.",
+    "repository": "https://github.com/CodeScience/java-heroku-canvas-demo",
+    "image": "heroku/gradle",
+    "addons": [ "heroku-postgresql" ],
+    "env": {
+        "OAUTH_UAF_CONSUMER_KEY": "21B5054D4C9D53D...",
+        "OAUTH_WSF_CONSUMER_KEY": "21B5054D4C9D53D...",
+        "OAUTH_WSF_CONSUMER_SECRET": "21B5054D4C9D53D...",
+        "OAUTH_WSF_CALLBACK_URL": "21B5054D4C9D53D...",
+        "SIGNED_REQUEST_CONSUMER_SECRET": "21B5054D4C9D53D..."
+    }
+  }

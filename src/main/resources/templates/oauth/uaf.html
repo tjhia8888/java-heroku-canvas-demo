@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Heroku Java Spring Boot Canvas Demo</title>
+		<link rel="stylesheet" type="text/css" href="../../canvas-js-sdk/css/canvas.css" />
+		<link href="../../jsonTree/jsonTree.css" rel="stylesheet" />
+		<link href="../../styles.css" rel="stylesheet">
+		<script type="text/javascript" src="../../canvas-js-sdk/js/canvas-all.js"></script>
+		<script type="text/javascript" src="../../jsonTree/jsonTree.js"></script>
+	</head>
+	<body>
+		<img src="../../spring-boot-logo.png" />
+		<h1>Heroku Java Spring Boot Canvas Demo</h1>
+		<h2>Canvas GET OAuth2 User-Agent Flow</h2>
+		<p>Hello <span id="fullName"></span>. This is a web app written in Java using Spring Boot embedded in your Salesforce page (It could also be written in any other language).</p>
+		<p>It is aware of its environment. For example, here are a few things it knows:</p>
+		<div><a id="login" href="#">Login</a><br /></div>
+		<table>
+			<tr>
+				<td>User:</td>
+				<td id="username">username</td>
+			</tr>
+			<tr>
+				<td>Object:</td>
+				<td id="objectType">Object Type</td>
+			</tr>
+			<tr>
+				<td>Id:</td>
+				<td id="recordId">Id</td>
+			</tr>
+			<tr>
+				<td>oauth token:</td>
+				<td id="oauth">oauth</td>
+			</tr>
+		</table>
+		<p>
+			It can also access more data in Salesforce using the REST APIs. With context and APIs, Canvas makes it easy to integrate applications written in any
+			language inside your Salesforce pages.
+		</p>
+
+		<div>
+			<button onclick="fireEvent();">Fire Event</button>
+			<h2>Listening to Events</h2>
+			<div id="messages"></div>
+		</div>
+		
+		<div id="wrapper"></div>
+
+		<script th:inline="javascript">
+			if (self === top) {
+				// Not in Iframe
+				alert("This canvas app must be included within an iframe");
+			}
+			function loginHandler(e) {
+				var uri;
+				if (!Sfdc.canvas.oauth.loggedin()) {
+					uri = Sfdc.canvas.oauth.loginUrl();
+					Sfdc.canvas.oauth.login({
+						uri: uri,
+						params: {
+							response_type: "token",
+							client_id:  /*[[${consumerKey}]]*/ "",
+							redirect_uri: encodeURIComponent(window.location.protocol + "//" + window.location.hostname + "/callback.html"),
+						}
+					});
+				} else {
+					Sfdc.canvas.oauth.logout();
+					login.innerHTML = "Login";
+					Sfdc.canvas.byId("oauth").innerHTML = "";
+				}
+				return false;
+			}
+			function fireEvent() {
+				var client = Sfdc.canvas.oauth.client();
+				console.log(client);
+				Sfdc.canvas.client.publish(client, { name: "suggestion", payload: { recommendation: "Verify identity" } });
+				console.log("Canvas sent", payloadObj);
+			}
+			function listenEvents() {
+                var client = Sfdc.canvas.oauth.client();
+				Sfdc.canvas.client.subscribe(client, {
+					name: "recordchanged",
+					onData: function (e) {
+						console.log("Canvas recevied", e);
+						var para = document.createElement("p");
+						var node = document.createTextNode("Got data at => " + new Date() + JSON.stringify(e));
+						para.appendChild(node);
+						document.querySelector("#messages").appendChild(para);
+					},
+				});
+			}
+
+			// Bootstrap the page once the DOM is ready.
+			Sfdc.canvas(function () {
+				// On Ready...
+				var login = Sfdc.canvas.byId("login"),
+					loggedIn = Sfdc.canvas.oauth.loggedin(),
+					token = Sfdc.canvas.oauth.token();
+				login.innerHTML = loggedIn ? "Logout" : "Login";
+				if (loggedIn) {
+					// Only displaying part of the OAuth token for better formatting.
+					Sfdc.canvas.byId("oauth").innerHTML = Sfdc.canvas.oauth.token().substring(1, 40) + "…";
+
+					var client = Sfdc.canvas.oauth.client();
+					console.log(client);
+					Sfdc.canvas.client.ctx(function (msg) {
+						if (msg.status !== 200) {
+							alert("Error: " + msg.status);
+							return;
+						}
+						Sfdc.canvas.client.autogrow(client);
+						jsonTree.create(msg, Sfdc.canvas.byId("wrapper"));
+					}, client);
+
+                    listenEvents();
+				}
+				login.onclick = loginHandler;
+			});
+		</script>
+	</body>
+</html>
