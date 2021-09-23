@@ -35,16 +35,67 @@
 
 		<div>
 			<button onclick="fireEvent();">Fire Event</button>
-			<h2>Listening to Events</h2>
+			<h1>Listening to Canvas Events</h1>
 			<div id="messages"></div>
 		</div>
-		
-		<div id="wrapper"></div>
+		<div>
+			<h1>Listening to Platform Events</h1>
+			<div id="streamingEvents"></div>
+		</div>
+
+		<div>
+			<input type="text" placeholder="message" id="post" />
+			<button onclick="postToChatter();">Post to Chatter</button>
+		</div>
+		<h1>List of Chatter Users</h1>
+		<div id="chatter-users"></div>
 
 		<script th:inline="javascript">
 			if (self === top) {
 				// Not in Iframe
 				alert("This canvas app must be included within an iframe");
+			}
+			function getChatterUsers() {
+                // Reference the Chatter user's URL from Context.Links object.
+				var chatterUsersUrl = sr.context.links.chatterUsersUrl;
+
+				// Make an XHR call back to salesforce through the supplied browser proxy.
+				Sfdc.canvas.client.ajax(chatterUsersUrl, {
+					client: sr.client,
+					success: function (data) {
+						// Make sure the status code is OK.
+						if (data.status === 200) {
+							data.payload.users.forEach((u) => {
+								var img = document.createElement("img");
+								img.src = u.photo.smallPhotoUrl;
+								document.querySelector("#chatter-users").appendChild(img);
+
+								var para = document.createElement("p");
+								var node = document.createTextNode(u.displayName);
+								para.appendChild(node);
+								document.querySelector("#chatter-users").appendChild(para);
+							});
+						}
+					},
+				});
+            }
+			function postToChatter() {
+				var post = Sfdc.canvas.byId("post").value;
+				// Reference the Chatter user's URL from Context.Links object.
+				var url = sr.context.links.chatterFeedsUrl + "/news/" + sr.context.user.userId + "/feed-items";
+				var body = { body: { messageSegments: [{ type: "Text", text: post }] } };
+
+				Sfdc.canvas.client.ajax(url, {
+					client: sr.client,
+					method: "POST",
+					contentType: "application/json",
+					data: JSON.stringify(body),
+					success: function (data) {
+						if (201 === data.status) {
+							alert("Success");
+						}
+					},
+				});
 			}
 			function fireEvent() {
 				console.log(sr.client);
@@ -63,17 +114,38 @@
 					},
 				});
 			}
+			function listenStreamingEvents() {
+                Sfdc.canvas.client.subscribe(sr.client, {
+                    name : 'sfdc.streamingapi', 
+                    params: {
+                        topic:"/event/CanvasEvent__e"
+                    },
+                    onData: function(data) {
+                        console.log("onData done", data);
+                        var para = document.createElement("p");
+						var node = document.createTextNode("Got Platform Event data at => " + new Date() + JSON.stringify(data));
+						para.appendChild(node);
+                        document.querySelector("#streamingEvents").appendChild(para);
+                    }, 
+                    onComplete: function(data) { 
+                        console.log("onComplete done", data);
+                    }
+                });
+			}
 
+			var sr = {};
 			var payloadObj = { recommendation: "Verify identity" };
 			Sfdc.canvas(function () {
 				var signedRequest = /*[[${signedRequest}]]*/ "";
 				sr = JSON.parse(signedRequest);
-				Sfdc.canvas.oauth.token(sr.oauthToken);
 				Sfdc.canvas.byId("fullName").innerHTML = sr.context.user.fullName;
 				Sfdc.canvas.byId("username").innerHTML = sr.context.user.userName;
 				Sfdc.canvas.byId("objectType").innerHTML = sr.context.environment.record.attributes.type;
 				Sfdc.canvas.byId("recordId").innerHTML = sr.context.environment.record.Id;
-				listenEvents();
+				Sfdc.canvas.client.autogrow(sr.client);
+				getChatterUsers();
+                listenEvents();
+                listenStreamingEvents();
 			});
 		</script>
 	</body>
