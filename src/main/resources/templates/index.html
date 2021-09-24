@@ -1,62 +1,90 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 	<head>
-		<meta charset="UTF-8" />
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Heroku Java Spring Boot Canvas Demo</title>
 		<link rel="stylesheet" type="text/css" href="/canvas-js-sdk/css/canvas.css" />
-		<link href="styles.css" rel="stylesheet">
+		<link href="styles.css" rel="stylesheet" />
 		<script type="text/javascript" src="/canvas-js-sdk/js/canvas-all.js"></script>
 		<script type="text/javascript" src="/json2.js"></script>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+			crossorigin="anonymous"
+		/>
 	</head>
 	<body>
-		<img src="spring-boot-logo.png" />
-		<h1>Heroku Java Spring Boot Canvas Demo</h1>
-		<h2>Canvas POST Signed Request</h2>
-		<p>Hello <span id="fullName"></span>. This is a web app written in Java using Spring Boot embedded in your Salesforce page (It could also be written in any other language).</p>
-		<p>It is aware of its environment. For example, here are a few things it knows:</p>
-		<table>
-			<tr>
-				<td>User:</td>
-				<td id="username">username</td>
-			</tr>
-			<tr>
-				<td>Object:</td>
-				<td id="objectType">Object Type</td>
-			</tr>
-			<tr>
-				<td>Id:</td>
-				<td id="recordId">Id</td>
-			</tr>
-		</table>
-		<p>
-			It can also access more data in Salesforce using the REST APIs. With context and APIs, Canvas makes it easy to integrate applications written in any
-			language inside your Salesforce pages.
-		</p>
-
-		<div>
-			<button onclick="fireEvent();">Fire Event</button>
-			<h1>Listening to Canvas Events</h1>
-			<div id="messages"></div>
+		<div class="container">
+			<div class="row">
+				<img src="spring-boot-logo.png" />
+				<h1>Heroku Java Spring Boot Canvas Demo</h1>
+				<h2>Canvas POST Signed Request</h2>
+				<p>
+					Hello <span id="fullName"></span>. This is a web app written in Java using Spring Boot embedded in your Salesforce page (It could also be
+					written in any other language).
+				</p>
+				<p>It is aware of its environment. For example, here are a few things it knows:</p>
+			</div>
+			<div class="row">
+				<table class="table">
+					<tr>
+						<td>User:</td>
+						<td id="username">username</td>
+					</tr>
+					<tr>
+						<td>Object:</td>
+						<td id="objectType">Object Type</td>
+					</tr>
+					<tr>
+						<td>Id:</td>
+						<td id="recordId">Id</td>
+					</tr>
+				</table>
+			</div>
+			<div class="row">
+				<p>
+					It can also access more data in Salesforce using the REST APIs. With context and APIs, Canvas makes it easy to integrate applications
+					written in any language inside your Salesforce pages.
+				</p>
+			</div>
+			<div class="row">
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" placeholder="Hello Chatter from Spring Boot!" id="post" />
+					<button class="btn btn-outline-secondary" type="button" onclick="postToChatter();">Post to Chatter</button>
+				</div>
+				<h1>List of Chatter Users</h1>
+				<div id="chatter-users"></div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<div class="input-group mb-3">
+						<input type="text" class="form-control" id="canvasEventMessage" placeholder="Hello Canvas from Spring Boot!" class="form-control" />
+						<button class="btn btn-outline-secondary" type="button" onclick="fireEvent();">Fire Event</button>
+					</div>
+					<h1>Listening to Canvas Events</h1>
+					<div id="messages"></div>
+				</div>
+				<div class="col">
+					<h1>Listening to Platform Events</h1>
+					<div id="streamingEvents"></div>
+				</div>
+			</div>
 		</div>
-		<div>
-			<h1>Listening to Platform Events</h1>
-			<div id="streamingEvents"></div>
-		</div>
 
-		<div>
-			<input type="text" placeholder="message" id="post" />
-			<button onclick="postToChatter();">Post to Chatter</button>
-		</div>
-		<h1>List of Chatter Users</h1>
-		<div id="chatter-users"></div>
-
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+			crossorigin="anonymous"
+		></script>
 		<script th:inline="javascript">
 			if (self === top) {
 				// Not in Iframe
 				alert("This canvas app must be included within an iframe");
 			}
 			function getChatterUsers() {
-                // Reference the Chatter user's URL from Context.Links object.
+				// Reference the Chatter user's URL from Context.Links object.
 				var chatterUsersUrl = sr.context.links.chatterUsersUrl;
 
 				// Make an XHR call back to salesforce through the supplied browser proxy.
@@ -78,7 +106,7 @@
 						}
 					},
 				});
-            }
+			}
 			function postToChatter() {
 				var post = Sfdc.canvas.byId("post").value;
 				// Reference the Chatter user's URL from Context.Links object.
@@ -115,22 +143,22 @@
 				});
 			}
 			function listenStreamingEvents() {
-                Sfdc.canvas.client.subscribe(sr.client, {
-                    name : 'sfdc.streamingapi', 
-                    params: {
-                        topic:"/event/CanvasEvent__e"
-                    },
-                    onData: function(data) {
-                        console.log("onData done", data);
-                        var para = document.createElement("p");
+				Sfdc.canvas.client.subscribe(sr.client, {
+					name: "sfdc.streamingapi",
+					params: {
+						topic: "/event/CanvasEvent__e",
+					},
+					onData: function (data) {
+						console.log("onData done", data);
+						var para = document.createElement("p");
 						var node = document.createTextNode("Got Platform Event data at => " + new Date() + JSON.stringify(data));
 						para.appendChild(node);
-                        document.querySelector("#streamingEvents").appendChild(para);
-                    }, 
-                    onComplete: function(data) { 
-                        console.log("onComplete done", data);
-                    }
-                });
+						document.querySelector("#streamingEvents").appendChild(para);
+					},
+					onComplete: function (data) {
+						console.log("onComplete done", data);
+					},
+				});
 			}
 
 			var sr = {};
@@ -144,8 +172,8 @@
 				Sfdc.canvas.byId("recordId").innerHTML = sr.context.environment.record.Id;
 				Sfdc.canvas.client.autogrow(sr.client);
 				getChatterUsers();
-                listenEvents();
-                listenStreamingEvents();
+				listenEvents();
+				listenStreamingEvents();
 			});
 		</script>
 	</body>
