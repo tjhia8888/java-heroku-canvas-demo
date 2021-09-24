@@ -4,80 +4,96 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Heroku Java Spring Boot Canvas Demo</title>
-		<link rel="stylesheet" type="text/css" href="/canvas-js-sdk/css/canvas.css" />
-		<link href="styles.css" rel="stylesheet" />
 		<script type="text/javascript" src="/canvas-js-sdk/js/canvas-all.js"></script>
 		<script type="text/javascript" src="/json2.js"></script>
 		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
 			rel="stylesheet"
-			integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+			href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.16.2/styles/salesforce-lightning-design-system.min.css"
+			integrity="sha512-4zTIO7L0OiCfwrJ0qx1l7FJzVFtJIXCtBjtxzh1cPEaocVlntVXooqrXCf6jk7yENLcymWklHY/tIikmDCF64A=="
 			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
 		/>
 	</head>
 	<body>
-		<div class="container">
-			<div class="row">
-				<img src="spring-boot-logo.png" />
-				<h1>Heroku Java Spring Boot Canvas Demo</h1>
-				<h2>Canvas POST Signed Request</h2>
+		<div class="slds-grid slds-gutters slds-grid_vertical">
+			<div class="slds-col">
+				<img src="spring-boot-logo.png" class="slds-media" alt="Spring Boot Logo" style="max-height:100px" />
+				<h1 class="slds-text-heading_large slds-m-bottom_xx-small">Heroku Java Spring Boot Canvas Demo</h1>
+				<h2 class="slds-text-heading_medium slds-m-bottom_xx-small">Canvas POST Signed Request</h2>
 				<p>
 					Hello <span id="fullName"></span>. This is a web app written in Java using Spring Boot embedded in your Salesforce page (It could also be
 					written in any other language).
 				</p>
 				<p>It is aware of its environment. For example, here are a few things it knows:</p>
 			</div>
-			<div class="row">
-				<table class="table">
-					<tr>
-						<td>User:</td>
-						<td id="username">username</td>
-					</tr>
-					<tr>
-						<td>Object:</td>
-						<td id="objectType">Object Type</td>
-					</tr>
-					<tr>
-						<td>Id:</td>
-						<td id="recordId">Id</td>
-					</tr>
-				</table>
+			<div class="slds-col">
+				<div class="user-card">
+					<article class="slds-tile slds-media">
+						<div class="slds-media__figure">
+							<span class="slds-avatar slds-avatar_circle slds-avatar_medium">
+								<img id="userPhoto" class="slds-media" />
+							</span>
+						</div>
+						<div class="slds-media__body">
+							<h3 class="slds-tile__title slds-truncate" id="fullName"></h3>
+							<div class="slds-tile__detail">
+								<dl class="slds-list_horizontal slds-wrap">
+									<dt class="slds-item_label slds-text-color_weak slds-truncate" title="Username">Username:</dt>
+									<dd class="slds-item_detail slds-truncate" id="username"></dd>
+									<dt class="slds-item_label slds-text-color_weak slds-truncate" title="Object Type">Object Type:</dt>
+									<dd class="slds-item_detail slds-truncate" id="objectType"></dd>
+									<dt class="slds-item_label slds-text-color_weak slds-truncate" title="Record Id">Record Id:</dt>
+									<dd class="slds-item_detail slds-truncate" id="recordId"></dd>
+								</dl>
+							</div>
+						</div>
+					</article>
+				</div>
 			</div>
-			<div class="row">
+			<div class="slds-col">
 				<p>
 					It can also access more data in Salesforce using the REST APIs. With context and APIs, Canvas makes it easy to integrate applications
 					written in any language inside your Salesforce pages.
 				</p>
 			</div>
-			<div class="row">
-				<div class="input-group mb-3">
-					<input type="text" class="form-control" placeholder="Hello Chatter from Spring Boot!" id="post" />
-					<button class="btn btn-outline-secondary" type="button" onclick="postToChatter();">Post to Chatter</button>
+			<div class="slds-col">
+				<div class="slds-form-element">
+					<div class="slds-form-element__control">
+						<div class="slds-grid slds-gutters">
+							<div class="slds-col slds-size_1-of-2">
+								<input type="text" class="slds-input" placeholder="Hello Chatter from Spring Boot!" id="post" />
+							</div>
+							<div class="slds-col slds-size_1-of-2">
+								<button class="slds-button slds-button_brand" type="button" onclick="postToChatter();">Post to Chatter</button>
+							</div>
+						</div>
+					</div>
 				</div>
-				<h1>List of Chatter Users</h1>
+				<h1 class="slds-text-heading_medium slds-m-around_xx-small">List of Chatter Users</h1>
 				<div id="chatter-users"></div>
 			</div>
-			<div class="row">
-				<div class="col">
-					<div class="input-group mb-3">
-						<input type="text" class="form-control" id="canvasEventMessage" placeholder="Hello Canvas from Spring Boot!" class="form-control" />
-						<button class="btn btn-outline-secondary" type="button" onclick="fireEvent();">Fire Event</button>
+			<div class="slds-col">
+				<div class="slds-form-element">
+					<div class="slds-form-element__control">
+						<div class="slds-grid slds-gutters">
+							<div class="slds-col slds-size_1-of-2">
+								<input type="text" class="slds-input" placeholder="Hello Canvas from Spring Boot!" id="canvasEventMessage" />
+							</div>
+							<div class="slds-col slds-size_1-of-2">
+								<button class="slds-button slds-button_brand" type="button" onclick="fireEvent();">Fire Event</button>
+							</div>
+						</div>
 					</div>
-					<h1>Listening to Canvas Events</h1>
-					<div id="messages"></div>
 				</div>
-				<div class="col">
-					<h1>Listening to Platform Events</h1>
-					<div id="streamingEvents"></div>
-				</div>
+				<h1 class="slds-text-heading_medium slds-m-around_xx-small">Listening to Canvas Events</h1>
+				<div id="messages"></div>
+			</div>
+			<div class="slds-col">
+				<h1 class="slds-text-heading_medium slds-m-around_xx-small">Listening to Platform Events</h1>
+				<div id="streamingEvents"></div>
 			</div>
 		</div>
 
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-			integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-			crossorigin="anonymous"
-		></script>
 		<script th:inline="javascript">
 			if (self === top) {
 				// Not in Iframe
@@ -94,14 +110,21 @@
 						// Make sure the status code is OK.
 						if (data.status === 200) {
 							data.payload.users.forEach((u) => {
-								var img = document.createElement("img");
-								img.src = u.photo.smallPhotoUrl;
-								document.querySelector("#chatter-users").appendChild(img);
-
-								var para = document.createElement("p");
-								var node = document.createTextNode(u.displayName);
-								para.appendChild(node);
-								document.querySelector("#chatter-users").appendChild(para);
+								var card = `<div class="chatter-user">
+									<div class="slds-media">
+										<div class="slds-media__figure">
+											<span class="slds-avatar slds-avatar_large">
+												<img class="slds-media" alt="${u.displayName}" src="${u.photo.smallPhotoUrl}" title="User avatar" />
+											</span>
+										</div>
+										<div class="slds-media__body">
+											<p>${u.displayName}</p>
+										</div>
+									</div>
+								</div>`;
+								var div = document.createElement("div");
+								div.innerHTML = card;
+								document.querySelector("#chatter-users").appendChild(div);
 							});
 						}
 					},
@@ -127,7 +150,8 @@
 			}
 			function fireEvent() {
 				console.log(sr.client);
-				Sfdc.canvas.client.publish(sr.client, { name: "suggestion", payload: payloadObj });
+				var text = document.querySelector("#canvasEventMessage").value;
+				Sfdc.canvas.client.publish(sr.client, { name: "suggestion", payload: { recommendation: text } });
 				console.log("Canvas sent", payloadObj);
 			}
 			function listenEvents() {
@@ -135,7 +159,9 @@
 					name: "recordchanged",
 					onData: function (e) {
 						console.log("Canvas recevied", e);
-						var para = document.createElement("p");
+						var para = document.createElement("div");
+						para.classList.add("slds-card");
+						para.classList.add("slds-p-around_medium");
 						var node = document.createTextNode("Got data at => " + new Date() + JSON.stringify(e));
 						para.appendChild(node);
 						document.querySelector("#messages").appendChild(para);
@@ -150,7 +176,9 @@
 					},
 					onData: function (data) {
 						console.log("onData done", data);
-						var para = document.createElement("p");
+						var para = document.createElement("div");
+						para.classList.add("slds-card");
+						para.classList.add("slds-p-around_medium");
 						var node = document.createTextNode("Got Platform Event data at => " + new Date() + JSON.stringify(data));
 						para.appendChild(node);
 						document.querySelector("#streamingEvents").appendChild(para);
@@ -162,10 +190,10 @@
 			}
 
 			var sr = {};
-			var payloadObj = { recommendation: "Verify identity" };
 			Sfdc.canvas(function () {
 				var signedRequest = /*[[${signedRequest}]]*/ "";
 				sr = JSON.parse(signedRequest);
+				Sfdc.canvas.byId("userPhoto").src = sr.context.user.profileThumbnailUrl;
 				Sfdc.canvas.byId("fullName").innerHTML = sr.context.user.fullName;
 				Sfdc.canvas.byId("username").innerHTML = sr.context.user.userName;
 				Sfdc.canvas.byId("objectType").innerHTML = sr.context.environment.record.attributes.type;
