@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  app:
+    image: 'docker-spring-boot-postgres:latest'
+    build:
+      context: .
+    container_name: canvas-demo
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/realty
+      - SPRING_DATASOURCE_USERNAME=realty
+      - SPRING_DATASOURCE_PASSWORD=realty
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+          
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=realty
+      - POSTGRES_PASSWORD=realty
