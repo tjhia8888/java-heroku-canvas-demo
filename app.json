@@ -5,10 +5,10 @@
     "image": "heroku/gradle",
     "addons": [ "heroku-postgresql:essential-0" ],
     "env": {
-        "OAUTH_UAF_CONSUMER_KEY": "3MVG9JJwBBbcN47JzSZtFOg_p0wQx.s4pqveh7yqpghhlHTvTSsAMuprd_PoY1oMBvAJZtHndv5oCo2TXQH4Y",
-        "OAUTH_WSF_CONSUMER_KEY": "3MVG9JJwBBbcN47JzSZtFOg_p0wQx.s4pqvehRiuiWK9XzvdGHT1dxwebIGEjyHJ6eWkKCS0SHv8PJAQfxKRd",
-        "OAUTH_WSF_CONSUMER_SECRET": "EAEA52780A3BB767EDAE95D6AB0A927FB1B5A68A9B7125C345D69DF5D22064E5",
-        "OAUTH_WSF_CALLBACK_URL": "https://canvas-java-9dd773a2126e.herokuapp.com/callback.html",
-        "SIGNED_REQUEST_CONSUMER_SECRET": "E50B9EB737C610E6DEDADBCBE37469B999E336941FFE8530AA41549C308B6EB3"
+        "OAUTH_UAF_CONSUMER_KEY": ".s4pqveh7yqpghhlHTvTSsAMuprd_PoY1oMBvAJZtHndv5oCo2TXQH4Y",
+        "OAUTH_WSF_CONSUMER_KEY": ".s4pqvehRiuiWK9XzvdGHT1dxwebIGEjyHJ6eWkKCS0SHv8PJAQfxKRd",
+        "OAUTH_WSF_CONSUMER_SECRET": "",
+        "OAUTH_WSF_CALLBACK_URL": "https://canvas--.herokuapp.com/callback.html",
+        "SIGNED_REQUEST_CONSUMER_SECRET": ""
     }
   }
